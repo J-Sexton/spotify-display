@@ -9,6 +9,7 @@ const fetch = require('node-fetch');
 const { URLSearchParams } = require('url');
 const app = express();
 const dotenv = require('dotenv')
+var ip = require('ip');
 dotenv.config();
 
 
@@ -18,7 +19,7 @@ app.get('/login', function(req, res){
   '?response_type=code' +
   '&client_id=' + process.env.SPOTIFY_CLIENT_ID +
   (scopes ? '&scope=' + encodeURIComponent('user-read-currently-playing') : '') +
-  '&redirect_uri=' + encodeURIComponent('http://localhost:3000/callback'));
+  '&redirect_uri=' + encodeURIComponent(`http://${ip.address()}:3000/callback`));
 });
 
 app.get('/callback', async function(req, res){
@@ -31,7 +32,7 @@ app.get('/callback', async function(req, res){
     form: {
       'grant_type': "authorization_code",
       'code' : code,
-      'redirect_uri' : 'http://localhost:3000/callback'
+      'redirect_uri' : `http://${ip.address()}:3000/callback`
     },
     headers: {
       'Authorization': 'Basic ' + Buffer.from(process.env.SPOTIFY_CLIENT_ID + ':' + process.env.SPOTIFY_CLIENT_SECRET).toString('base64'),
@@ -68,5 +69,5 @@ app.get('/callback', async function(req, res){
   });
 });
 
-app.listen(process.env.PORT, () => console.log(`Listening on Port ${process.env.PORT}`))
-display.displayStaticImage('./static/default.png');``
+app.listen(process.env.PORT, () => console.log(`Listening on ${ip.address()} : ${process.env.PORT}`))
+display.displayStaticImage('./static/default.png');``  
