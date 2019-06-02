@@ -8,6 +8,8 @@ const display = require('./app/views/display')
 const fetch = require('node-fetch');
 const { URLSearchParams } = require('url');
 const app = express();
+const dotenv = require('dotenv')
+dotenv.config();
 
 
 app.get('/login', function(req, res){

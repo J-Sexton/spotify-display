@@ -9,10 +9,8 @@
             "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceFolder}/app.js",
-            "envFile": "${workspaceFolder}/.env",
             "console": "externalTerminal",
             "env": {
-                "PORT":"3000"
             }
         }
     ]

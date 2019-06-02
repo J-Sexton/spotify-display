@@ -3,6 +3,8 @@ const request = require('request');
 const display = require('../views/display');
 const fetch = require('node-fetch');
 const FormData = require('form-data');
+const dotenv = require('dotenv')
+dotenv.config();
 const { URLSearchParams } = require('url');
 function getSpotifyToken() {
     http.get()
