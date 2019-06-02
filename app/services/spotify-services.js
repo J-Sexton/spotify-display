@@ -64,16 +64,16 @@ async function monitorCurrentlyPlaying(refreshToken){
         json: true
       };
       try{
-        let albumOptions = await this.getCurrentListening(meOptions);
-        let imageUrl = await this.getAlbumArtwork(albumOptions);
+        let albumOptions = await getCurrentListening(meOptions);
+        let imageUrl = await getAlbumArtwork(albumOptions);
         (async(imageUrl) => {
           display.displayUrlImage(imageUrl);
         })(imageUrl);
-        this.monitorCurrentlyPlaying(refreshToken);
+        setTimeout(monitorCurrentlyPlaying, 30000, refreshToken);
       }catch(err){
           console.log(err);
           display.displayStaticImage('./static/default.png');
-          this.monitorCurrentlyPlaying(refreshToken);
+          setTimeout(monitorCurrentlyPlaying, 30000, refreshToken);
       }
 }
 
