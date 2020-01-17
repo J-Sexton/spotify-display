@@ -4,6 +4,7 @@ const display = require('../views/display');
 const fetch = require('node-fetch');
 const FormData = require('form-data');
 const dotenv = require('dotenv')
+const { URL } = require('url');
 dotenv.config();
 const { URLSearchParams } = require('url');
 function getSpotifyToken() {
@@ -20,17 +21,26 @@ async function getCurrentListening(meOptions){
         if(response.status === 200){
             let responseJson = await response.json();
             return {
-                uri: responseJson.item.album.href,
-                headers: meOptions.headers,
-                json:true
+                album: responseJson.item.album.name,
+                song: responseJson.item.name,
+                artist: responseJson.item.artists,
+                albumOptions: {
+                    uri: responseJson.item.album.href,
+                    headers: meOptions.headers,
+                    json:true
+                },
+                response: response.status
             }
         }else{
-            return response.status + ':' + response.statusText;
+            return {
+                response: response.status
+            }
         }
 }
 
 async function getAlbumArtwork(albumOptions) {
-    let response = await fetch(albumOptions.uri, {
+    let spotifyUrl = new URL(albumOptions.uri)
+    let response = await fetch(spotifyUrl.href, {
         headers: albumOptions.headers
     });
     let jsonResponse = await response.json();
