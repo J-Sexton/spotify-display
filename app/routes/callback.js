@@ -14,14 +14,14 @@ module.exports = app => {
             form: {
               'grant_type': "authorization_code",
               'code' : code,
-              'redirect_uri' : `http://${ip.address()}:3000/callback`
+              'redirect_uri' : `http://localhost:3001/callback`
             },
             headers: {
               'Authorization': 'Basic ' + Buffer.from(process.env.SPOTIFY_CLIENT_ID + ':' + process.env.SPOTIFY_CLIENT_SECRET).toString('base64'),
               'Content-Type': 'application/x-www-form-urlencode'
             }
           };
-          (async (response) => {
+          (async (response, code) => {
               request.post(options, async (err, res, body) => {
                   console.log(`statusCode: ${res.statusCode}`);
                   if (res.statusCode === 200 && !err) {
@@ -36,34 +36,16 @@ module.exports = app => {
                           },
                           json: true
                       };
-                      try {
-                          let currentListening = await spotifyService.getCurrentListening(userOptions, res);
-                          albumOptions = currentListening.albumOptions;
-                          let imageUrl = await spotifyService.getAlbumArtwork(albumOptions);
-                          let spotifyData = {
-                              albumName: currentListening.albumName,
-                              artistName: currentListening.artistName,
-                              imageUrl: imageUrl,
-                              refreshToken: refresh_token
-                          };
-                          (async(imageUrl) => {
-                            display.displayUrlImage(imageUrl);
-                          })(imageUrl);
-                          response.send(spotifyData)
-                        /*
-                          This logic is from before this code was an api. I am not ready to get rid of it. 
-                            spotifyService.monitorCurrentlyPlaying(refresh_token);
+                      response.cookie("ACCESS_TOKEN", access_token)
+                      response.cookie("REFRESH_TOKEN", refresh_token)
+                      response.cookie("CODE", code)
+                      response.redirect('http://localhost:3000/display')
+                  }else{
+                    console.log("ERR");
+                    response.redirect('/display')
 
-                        */
-                      }
-                      catch (err) {
-                          console.log(err);
-                          res.statusCode(500);
-                          display.displayStaticImage('./static/default.png');
-                          spotifyService.monitorCurrentlyPlaying(refresh_token);
-                      }
                   }
               });
-          })(res);
+          })(res, code);
       });
 }
